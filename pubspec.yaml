@@ -1,0 +1,8 @@
+name: nexrad_archive
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  archive: ^3.6.1
