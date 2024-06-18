@@ -69,7 +69,6 @@ class NexradLDMRecord {
         default:
           seek += MESSAGE_SIZE;
           messages.add(NexradMessageUnimplemented(header, payload));
-        //print("warning unknown message type ${header.type}");
       }
     }
     return messages;

@@ -25,21 +25,6 @@ class NexradMessage5 extends NexradMessage {
       : messageSize = bytes.getNexradInteger2(halfwordHighByte(1)),
         patternNumber = bytes.getNexradInteger2(halfwordHighByte(3)),
         numberOfElevationCuts = bytes.getNexradInteger2(halfwordHighByte(4)) {
-    print(
-      bytes.buffer.asUint8List(bytes.offsetInBytes + 24).take(200).toList(),
-    );
-    for (int i = 0; i < numberOfElevationCuts; i++) {
-      print(
-        bytes.buffer
-            .asUint8List(
-              bytes.offsetInBytes +
-                  halfwordHighByte(12) +
-                  (i * NexradElevationAngle.NUMBER_OF_E_VALUES * 2),
-            )
-            .take(48)
-            .toList(),
-      );
-    }
     elevationAngles = List.generate(
       numberOfElevationCuts,
       (index) => NexradElevationAngle(

@@ -66,7 +66,6 @@ class NexradMessage31 extends NexradMessage {
       // For now we only parse the data blocks with ID:
       // each block also has a block type. i believe the block name is unique
       // "VEL", "REF", "SW", "RHO", "PHI", "ZDR", "CFP"
-      // print(blockId);
       switch (blockId) {
         case "VOL":
           volumeDataBlock = VolumeDataConstantType(
