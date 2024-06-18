@@ -1,9 +1,10 @@
 import 'dart:typed_data';
-import 'package:archive/archive.dart';
 
-import 'ldm_header.dart';
-import 'message_31.dart';
-import 'nexrad_archive.dart';
+import 'package:archive/archive.dart';
+import 'package:nexrad_archive/ldm_header.dart';
+import 'package:nexrad_archive/message_31.dart';
+import 'package:nexrad_archive/message_5.dart';
+import 'package:nexrad_archive/nexrad_archive.dart';
 
 /// compressed chunks of data that come from the LDM
 class NexradLDMRecord {
@@ -16,7 +17,7 @@ class NexradLDMRecord {
 
   final ByteData bytes;
 
-  NexradLDMRecord(ByteData this.bytes);
+  NexradLDMRecord(this.bytes);
 
   /// decompresses, parses, and returns the message contained in this record
   /// the type will vary depending on the message
@@ -26,10 +27,12 @@ class NexradLDMRecord {
 
   /// Decompresses an LDM message accounting for the header
   Uint8List decompressBytes() {
-    return BZip2Decoder().decodeBytes(bytes.buffer
-        .asUint8List(
-            bytes.offsetInBytes + NexradArchiveIIReader.TCM_MESSAGE_SIZE,
-            bytes.lengthInBytes)) as Uint8List;
+    return BZip2Decoder().decodeBytes(
+      bytes.buffer.asUint8List(
+        bytes.offsetInBytes + NexradArchiveIIReader.TCM_MESSAGE_SIZE,
+        bytes.lengthInBytes,
+      ),
+    ) as Uint8List;
   }
 
   /// returns a list of messages from uncompressed LDM record bytes
@@ -39,11 +42,19 @@ class NexradLDMRecord {
 
     int seek = 0;
     while (seek < decompressedBytes.length) {
-      final header = NexradMessageHeader(ByteData.view(
-          decompressedBytes.buffer, seek + 0, NexradMessageHeader.SIZE));
+      final header = NexradMessageHeader(
+        ByteData.view(
+          decompressedBytes.buffer,
+          seek + 0,
+          NexradMessageHeader.SIZE,
+        ),
+      );
       // Create a view that is aligned to the end of the LDM header
       final payload = ByteData.view(
-          decompressedBytes.buffer, NexradMessageHeader.SIZE + seek);
+        decompressedBytes.buffer,
+        NexradMessageHeader.SIZE + seek,
+      );
+
       switch (header.type) {
         case 31:
           final message = NexradMessage31(header, payload);
@@ -51,14 +62,20 @@ class NexradLDMRecord {
               (NexradMessageHeader.SIZE - CTM_HEADER_SIZE) +
               NexradMessageHeader.SIZE;
           messages.add(message);
+        case 5 || 7:
+          final message = NexradMessage5(header, payload);
+          seek += MESSAGE_SIZE;
+          messages.add(message);
         default:
           seek += MESSAGE_SIZE;
-          print("warning unknown message type ${header.type}");
+          messages.add(NexradMessageUnimplemented(header, payload));
+        //print("warning unknown message type ${header.type}");
       }
     }
     return messages;
   }
 
+  @override
   String toString() =>
       'NexradLDMRecord(compressedSize: ${bytes.lengthInBytes})';
 }
@@ -69,5 +86,12 @@ abstract class NexradMessage {
 
   NexradMessage(this.header, this.bytes);
 
+  @override
   String toString() => 'NexradMessage(header: $header)';
+}
+
+/// Allows for user detection of unimplemented message types
+/// it has no implementation and could be implemented if absolutely needed
+class NexradMessageUnimplemented extends NexradMessage {
+  NexradMessageUnimplemented(super.header, super.bytes);
 }

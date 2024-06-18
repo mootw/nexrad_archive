@@ -1,6 +1,6 @@
 import 'dart:typed_data';
-import 'ldm_record.dart';
-import 'types.dart';
+import 'package:nexrad_archive/ldm_record.dart';
+import 'package:nexrad_archive/types.dart';
 
 /// based on table XVII 3.2.4.17 message type 31 in 2620002W
 /// starts on page 3-86
@@ -70,19 +70,25 @@ class NexradMessage31 extends NexradMessage {
       switch (blockId) {
         case "VOL":
           volumeDataBlock = VolumeDataConstantType(
-              ByteData.view(bytes.buffer, bytes.offsetInBytes + blockPointer));
+            ByteData.view(bytes.buffer, bytes.offsetInBytes + blockPointer),
+          );
         case "RAD":
           radialDataBlock = RadialDataConstantType(
-              ByteData.view(bytes.buffer, bytes.offsetInBytes + blockPointer));
+            ByteData.view(bytes.buffer, bytes.offsetInBytes + blockPointer),
+          );
         case "REF" || "VEL" || "SW" || "ZDR" || "PHI" || "RHO" || "CFP":
-          genericDataBlocks.add(GenericDataMomentType(
-              ByteData.view(bytes.buffer, bytes.offsetInBytes + blockPointer)));
+          genericDataBlocks.add(
+            GenericDataMomentType(
+              ByteData.view(bytes.buffer, bytes.offsetInBytes + blockPointer),
+            ),
+          );
       }
     }
   }
 
   /// mapped degree value of azimuthResolutionSpacing
-  get azimuthResolutionSpacingValue => switch (azimuthResolutionSpacing) {
+  double get azimuthResolutionSpacingValue =>
+      switch (azimuthResolutionSpacing) {
         1 => 0.5,
         2 => 1.0,
         _ => throw Exception("unknown azimuthResolutionSpacing")
@@ -200,12 +206,13 @@ class GenericDataMomentType extends DataBlock {
         scale = bytes.getNexradReal4(20),
         offset = bytes.getNexradReal4(24) {
     momentsRaw = List.generate(
-        dataMomentGateQuantity,
-        (index) => switch (dataWordSize) {
-              8 => bytes.getNexradInteger1(28 + (index * 1)),
-              16 => bytes.getNexradInteger2(28 + (index * 2)),
-              _ => throw Exception("invalid dataWordSize $dataWordSize"),
-            },
-        growable: false);
+      dataMomentGateQuantity,
+      (index) => switch (dataWordSize) {
+        8 => bytes.getNexradInteger1(28 + (index * 1)),
+        16 => bytes.getNexradInteger2(28 + (index * 2)),
+        _ => throw Exception("invalid dataWordSize $dataWordSize"),
+      },
+      growable: false,
+    );
   }
 }

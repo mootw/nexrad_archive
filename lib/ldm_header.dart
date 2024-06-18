@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'types.dart';
+import 'package:nexrad_archive/types.dart';
 
 class NexradMessageHeader {
   /// size in bytes of this header
@@ -33,6 +33,7 @@ class NexradMessageHeader {
   DateTime get dateTime =>
       DateTime.utc(1970, 1, 1 + date).add(Duration(milliseconds: time));
 
+  @override
   String toString() =>
       'NexradLDMHeader(messageSize: $messageSize, redundantChannel: $redundantChannel, type: $type, seq: $seq, date: $dateTime, numSegments: $numSegments, segmentNumber: $segmentNumber)';
 }

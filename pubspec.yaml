@@ -1,8 +1,23 @@
 name: nexrad_archive
-version: 1.0.0+1
+description: Decode Nexrad Level 2 Archives or LDM chunk messages easily! You will need a basic understanding of the nexrad message format to effectively use the data
+version: 0.0.1+1
+
+repository: https://github.com/mootw/nexrad_archive
+issue_tracker: https://github.com/mootw/nexrad_archive/issues
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   archive: ^3.6.1
+
+dev_dependencies:
+  lint: ^2.1.2

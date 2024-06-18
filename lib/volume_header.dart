@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'types.dart';
+import 'package:nexrad_archive/types.dart';
 
 /// 2620010E - 7.3.3
 class NexradVolumeHeader {
@@ -30,6 +30,7 @@ class NexradVolumeHeader {
   DateTime get dateTime =>
       DateTime.utc(1970, 1, 1 + date).add(Duration(milliseconds: time));
 
+  @override
   String toString() =>
       'NexradVolumeHeader{header: $header, version: $version, extension: $extension, date: $dateTime, station: $icao}';
 }
