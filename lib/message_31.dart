@@ -190,8 +190,7 @@ class GenericDataMomentType extends DataBlock {
   /// 2620002W 3-93
   late List<int> momentsRaw;
 
-  Iterable<double> get momentsScaled =>
-      momentsRaw.map((e) => (e - offset) / scale);
+  double getScaled(int index) => (momentsRaw[index] - offset) / scale;
 
   GenericDataMomentType(super.bytes)
       : dataMomentGateQuantity = bytes.getNexradInteger2(8),
