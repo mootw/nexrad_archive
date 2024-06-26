@@ -188,7 +188,7 @@ class GenericDataMomentType extends DataBlock {
   /// N=1 indicates point clutter filter was applied. N=2 indicates dual pol variables were filtered but not
   /// single pol moments. Values 3 through 7 are reserved for future use. Actual data range begins at N=8.
   /// 2620002W 3-93
-  late List<int> momentsRaw;
+  late Uint16List momentsRaw;
 
   double getScaled(int index) => (momentsRaw[index] - offset) / scale;
 
@@ -203,14 +203,13 @@ class GenericDataMomentType extends DataBlock {
         dataWordSize = bytes.getNexradInteger1(19),
         scale = bytes.getNexradReal4(20),
         offset = bytes.getNexradReal4(24) {
-    momentsRaw = List.generate(
-      dataMomentGateQuantity,
-      (index) => switch (dataWordSize) {
-        8 => bytes.getNexradInteger1(28 + (index * 1)),
-        16 => bytes.getNexradInteger2(28 + (index * 2)),
+    momentsRaw = Uint16List(dataMomentGateQuantity);
+    for (int i = 0; i < momentsRaw.length; i++) {
+      momentsRaw[i] = switch (dataWordSize) {
+        8 => bytes.getNexradInteger1(28 + (i * 1)),
+        16 => bytes.getNexradInteger2(28 + (i * 2)),
         _ => throw Exception("invalid dataWordSize $dataWordSize"),
-      },
-      growable: false,
-    );
+      };
+    }
   }
 }
