@@ -25,7 +25,7 @@ extension NexradTypes on ByteData {
 bool checkBit(int byte, int bit) => (byte & (1 << bit)) != 0;
 
 /// 2620002W - 3.2.4.3 Table III-A Angle Data Format
-double angleDataFormat(List<int> bytes) {
+double angleDataFormat(Uint8List bytes) {
   assert(bytes.length == 2);
 
   final double value = (checkBit(bytes[0], 7) ? 180 : 0) +
@@ -49,7 +49,7 @@ double angleDataFormat(List<int> bytes) {
 }
 
 /// 3.2.4.12.1 Table XI-D Azimuth and Elevation Rate Data
-double angleRateDataFormat(List<int> bytes) {
+double angleRateDataFormat(Uint8List bytes) {
   assert(bytes.length == 2);
 
   final double value = (checkBit(bytes[1], 3) ? 0.010986328125 : 0) +
